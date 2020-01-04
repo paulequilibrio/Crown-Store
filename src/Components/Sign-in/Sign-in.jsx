@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './Sign-in.styles.scss';
 import Custombutton from '../Custom-button/Custom-button.component';
 import InputForm from '../Input-Form/Input-form';
-import { signInWithGoogle } from '../../Firebase/firebase.utils';
+import { auth, signInWithGoogle } from '../../Firebase/firebase.utils';
 
 class SignIn extends Component {
     constructor() {
@@ -12,12 +12,21 @@ class SignIn extends Component {
             password: ''
         }
     }
-handleSubmit = (event) => {
+handleSubmit = async event => {
     event.preventDefault();
-    this.setState({email: '', password: ''});
+    const { email, password } = this.state;
+
+    try {
+        await auth.signInWithEmailAndPassword(email, password);
+        this.setState({email: '', password: ''});
+
+    } catch (error) {
+        console.log(error);
+    }
+
 }
 
-handleChange = (event) => {
+handleChange =  event => {
     const {value, name} = event.target;
 
     this.setState({[name] : value})
