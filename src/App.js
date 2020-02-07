@@ -1,21 +1,22 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import './App.css';
-import {Route, Switch, Redirect} from 'react-router-dom';
+import Header from './Components/Header/Header.component';
+import Checkout from './Components/Pages/Checkout/Checkout.component';
 import HomePage from "./Components/Pages/Homepages/Homepage.component";
 import ShopPage from './Components/Pages/Homepages/Shop/Shop.component';
 import SignInAndSignUp from './Components/Pages/Homepages/Sign-in and Sign-up/Sign-in and Sign-up.component';
-import Checkout from './Components/Pages/Checkout/Checkout.component';
-import { connect } from 'react-redux';
+import { addCollectionAndDocuments, auth, createUserProfileDocument } from './Firebase/firebase.utils';
+import { selectCollectionsForPreview } from './redux/shop/shop.selector';
 import { setCurrentUser } from './redux/user/user.actions';
-import Header from './Components/Header/Header.component';
-import { auth, createUserProfileDocument } from './Firebase/firebase.utils';
 
 class App extends Component {
     unSubscribeFromAuth = null;
 
     componentDidMount() {
 
-      const { setCurrentUser } = this.props;
+      const { setCurrentUser, collectionsArray } = this.props;
 
       this.unSubscribeFromAuth = auth.onAuthStateChanged(async userAuth =>  {
         
@@ -29,7 +30,9 @@ class App extends Component {
             })
           });
         }
+
         setCurrentUser(userAuth);
+        addCollectionAndDocuments('collections', collectionsArray.map(({title, items}) => ({title, items})));
       });
     }
 
@@ -53,7 +56,8 @@ class App extends Component {
 }
 
 const mapStateToProps = ({user}) => ({
-  currentUser: user.currentUser
+  currentUser: user.currentUser,
+  collectionsArray: selectCollectionsForPreview
 })
 
 const mapDispatchToProps = dispatch => ({
