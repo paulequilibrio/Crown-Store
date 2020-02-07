@@ -11,6 +11,9 @@ import { addCollectionAndDocuments, auth, createUserProfileDocument } from './Fi
 import { selectCollectionsForPreview } from './redux/shop/shop.selector';
 import { setCurrentUser } from './redux/user/user.actions';
 
+import { selectCurrentUser } from './redux/user/user.selectors'
+import { createStructuredSelector } from 'reselect'
+
 class App extends Component {
     unSubscribeFromAuth = null;
 
@@ -55,8 +58,8 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = ({user}) => ({
-  currentUser: user.currentUser,
+const mapStateToProps = createStructuredSelector({
+  currentUser: selectCurrentUser,
   collectionsArray: selectCollectionsForPreview
 })
 
